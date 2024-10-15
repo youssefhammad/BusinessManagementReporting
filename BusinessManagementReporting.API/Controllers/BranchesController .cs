@@ -1,10 +1,12 @@
 ﻿using BusinessManagementReporting.Core.DTOs.Branch;
 using BusinessManagementReporting.Core.DTOs.ResponseModel;
 using BusinessManagementReporting.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessManagementReporting.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BranchesController : ControllerBase

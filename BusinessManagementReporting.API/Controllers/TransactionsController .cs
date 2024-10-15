@@ -1,11 +1,12 @@
 ﻿using BusinessManagementReporting.Core.DTOs.ResponseModel;
 using BusinessManagementReporting.Core.DTOs.Transaction;
 using BusinessManagementReporting.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessManagementReporting.API.Controllers
 {
-    // Controllers/TransactionsController.cs
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TransactionsController : ControllerBase

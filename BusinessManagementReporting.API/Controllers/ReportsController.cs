@@ -4,6 +4,7 @@ using BusinessManagementReporting.Core.DTOs.Report.CustomerDemographics;
 using BusinessManagementReporting.Core.DTOs.Report.Revenue;
 using BusinessManagementReporting.Core.DTOs.ResponseModel;
 using BusinessManagementReporting.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BusinessManagementReporting.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReportsController : ControllerBase

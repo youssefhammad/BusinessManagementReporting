@@ -1,4 +1,5 @@
 ﻿using BusinessManagementReporting.Core.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,10 @@ namespace BusinessManagementReporting.Infrastructure.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedAsync(ApplicationDbContext context)
+        public static async Task SeedAsync(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             await context.Database.EnsureCreatedAsync();
 
@@ -311,6 +315,79 @@ namespace BusinessManagementReporting.Infrastructure.Data
 
             await context.Transactions.AddRangeAsync(transactions);
             await context.SaveChangesAsync();
+
+            await SeedRolesAsync(roleManager);
+
+            await SeedUsersAsync(userManager);
+        }
+
+        private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        {
+            var roles = new List<string> { "Admin", "User" };
+
+            foreach (var roleName in roles)
+            {
+                var roleExists = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExists)
+                {
+                    var role = new IdentityRole(roleName);
+                    await roleManager.CreateAsync(role);
+                }
+            }
+        }
+
+        private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager)
+        {
+            var testUserEmail = "testuser@example.com";
+            var testUserPassword = "Test@123";
+
+            var testUser = await userManager.FindByEmailAsync(testUserEmail);
+            if (testUser == null)
+            {
+                testUser = new ApplicationUser
+                {
+                    UserName = testUserEmail,
+                    Email = testUserEmail,
+                    EmailConfirmed = true, 
+                };
+
+                var result = await userManager.CreateAsync(testUser, testUserPassword);
+                if (result.Succeeded)
+                {
+                    // Assign role if needed
+                    await userManager.AddToRoleAsync(testUser, "User");
+                }
+                else
+                {
+                    // Handle errors (log them or throw exception)
+                    throw new Exception($"Failed to create test user: {string.Join(", ", result.Errors)}");
+                }
+            }
+
+            // Optionally create an admin user
+            var adminUserEmail = "admin@example.com";
+            var adminUserPassword = "Admin@123";
+
+            var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
+            if (adminUser == null)
+            {
+                adminUser = new ApplicationUser
+                {
+                    UserName = adminUserEmail,
+                    Email = adminUserEmail,
+                    EmailConfirmed = true,
+                };
+
+                var result = await userManager.CreateAsync(adminUser, adminUserPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+                else
+                {
+                    throw new Exception($"Failed to create admin user: {string.Join(", ", result.Errors)}");
+                }
+            }
         }
     }
 }
