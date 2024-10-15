@@ -11,6 +11,11 @@ using BusinessManagementReporting.Core.Entities;
 using AutoMapper;
 using BusinessManagementReporting.Core.Mappings;
 using Serilog.Sinks.MSSqlServer;
+using Microsoft.AspNetCore.Identity;
+using BusinessManagementReporting.Core.Helpers;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +29,56 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Host.UseSerilog();
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Password settings for strong security
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSettingsSection);
+var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+
+var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = true; 
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidateAudience = true,
+        ValidAudience = jwtSettings.Audience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero 
+    };
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
@@ -35,11 +90,18 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IReportValidationService, ReportValidationService>();
 
 builder.Services.AddScoped<IClientService, ClientService>();
+
 builder.Services.AddScoped<IBranchService, BranchService>();
+
 builder.Services.AddScoped<IServiceService, ServiceService>();
+
 builder.Services.AddScoped<IBookingService, BusinessManagementReporting.Services.Implementations.BookingService>();
+
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 builder.Services.AddScoped<IBookingServiceService, BookingServiceService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var mapperConfig = AutoMapperConfig.Configure();
 IMapper mapper = mapperConfig.CreateMapper();
