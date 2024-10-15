@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Serilog.Events;
 using Serilog;
 using BusinessManagementReporting.Core.Entities;
+using AutoMapper;
+using BusinessManagementReporting.Core.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,17 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddScoped<IReportValidationService, ReportValidationService>();
+
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
+builder.Services.AddScoped<IBookingService, BusinessManagementReporting.Services.Implementations.BookingService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IBookingServiceService, BookingServiceService>();
+
+var mapperConfig = AutoMapperConfig.Configure();
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
