@@ -4,6 +4,7 @@ using BusinessManagementReporting.Core.DTOs.Report.CustomerDemographics;
 using BusinessManagementReporting.Core.DTOs.Report.Revenue;
 using BusinessManagementReporting.Core.DTOs.ResponseModel;
 using BusinessManagementReporting.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,11 +28,11 @@ namespace BusinessManagementReporting.API.Controllers
         }
 
         [HttpGet("Revenue")]
-        public async Task<ActionResult<ApiResponse<RevenueReportDto>>> GetRevenueReport([FromQuery] ReportRequest request)
+        public async Task<ActionResult<ApiResponse<RevenueReportDto>>> GetRevenueReport([FromQuery] RevenueReportRequest request)
         {
             _logger.LogInformation("Generating revenue report. Request: {@Request}", request);
 
-            var (isValid, errorMessage) = _validationService.ValidateReportRequest(request);
+            var (isValid, errorMessage) = _validationService.ValidateRevenueReportRequest(request);
             if (!isValid)
             {
                 _logger.LogWarning("Validation failed for revenue report request. Error: {ErrorMessage}", errorMessage);
@@ -58,11 +59,11 @@ namespace BusinessManagementReporting.API.Controllers
         }
 
         [HttpGet("Appointment")]
-        public async Task<ActionResult<ApiResponse<AppointmentReportDto>>> GetAppointmentReport([FromQuery] ReportRequest request)
+        public async Task<ActionResult<ApiResponse<AppointmentReportDto>>> GetAppointmentReport([FromQuery] AppointmentReportRequest request)
         {
             _logger.LogInformation("Generating appointment report. Request: {@Request}", request);
 
-            var (isValid, errorMessage) = _validationService.ValidateReportRequest(request);
+            var (isValid, errorMessage) = _validationService.ValidateAppointmentReportRequest(request);
             if (!isValid)
             {
                 _logger.LogWarning("Validation failed for appointment report request. Error: {ErrorMessage}", errorMessage);
@@ -75,7 +76,8 @@ namespace BusinessManagementReporting.API.Controllers
                     request.StartDate,
                     request.EndDate,
                     request.BranchId,
-                    request.ServiceIds
+                    request.ServiceIds,
+                    request.BookingStatus
                 );
                 _logger.LogInformation("Appointment report generated successfully");
                 return Ok(ApiResponse<AppointmentReportDto>.SuccessResponse(report, "Appointment report generated successfully."));

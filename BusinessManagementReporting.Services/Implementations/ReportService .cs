@@ -39,23 +39,23 @@ namespace BusinessManagementReporting.Services.Implementations
         }
 
         public async Task<AppointmentReportDto> GetAppointmentReportAsync(
-       DateTime? startDate = null,
-       DateTime? endDate = null,
-       int? branchId = null,
-       List<int>? serviceIds = null,
-       string? paymentMethod = null)
+           DateTime? startDate = null,
+           DateTime? endDate = null,
+           int? branchId = null,
+           List<int>? serviceIds = null,
+           string? status = null)
         {
             var totalAppointments = await _unitOfWork.ReportRepository.GetTotalAppointmentsAsync(
-                startDate, endDate, branchId, serviceIds, paymentMethod);
+                startDate, endDate, branchId, serviceIds, status);
 
             var appointmentsByService = await _unitOfWork.ReportRepository.GetAppointmentsByServiceAsync(
-                startDate, endDate, branchId, serviceIds, paymentMethod);
+                startDate, endDate, branchId, serviceIds);
 
             var appointmentsByBranch = await _unitOfWork.ReportRepository.GetAppointmentsByBranchAsync(
-                startDate, endDate, branchId, serviceIds, paymentMethod);
+                startDate, endDate, branchId, serviceIds, status);
 
             var appointmentsByStatus = await _unitOfWork.ReportRepository.GetAppointmentsByStatusAsync(
-                startDate, endDate, branchId, serviceIds, paymentMethod);
+                startDate, endDate, branchId, serviceIds, status);
 
 
             var appointmentReport = new AppointmentReportDto

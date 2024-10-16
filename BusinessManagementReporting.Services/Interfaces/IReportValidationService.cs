@@ -9,7 +9,8 @@ namespace BusinessManagementReporting.Services.Interfaces
 {
     public interface IReportValidationService
     {
-        (bool IsValid, string? ErrorMessage) ValidateReportRequest(ReportRequest request);
+        (bool IsValid, string? ErrorMessage) ValidateRevenueReportRequest(RevenueReportRequest request);
+        (bool IsValid, string? ErrorMessage) ValidateAppointmentReportRequest(AppointmentReportRequest request);
         (bool IsValid, string ErrorMessage) ValidateCustomerDemographicsReportRequest(CustomerDemographicsReportRequest request);
     }
 }

@@ -128,11 +128,11 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
             DateTime? endDate = null,
             int? branchId = null,
             List<int>? serviceIds = null,
-            string? paymentMethod = null)
+            string? status = null)
         {
             var query = _context.Bookings.AsQueryable();
 
-            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, paymentMethod);
+            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, status);
 
             return await query.CountAsync();
         }
@@ -141,15 +141,14 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
             DateTime? startDate = null,
             DateTime? endDate = null,
             int? branchId = null,
-            List<int>? serviceIds = null,
-            string? paymentMethod = null)
+            List<int>? serviceIds = null)
         {
             var query = _context.BookingServices
                 .Include(bs => bs.Booking)
                 .Include(bs => bs.Service)
                 .AsQueryable();
 
-            query = ApplyCommonBookingServiceFilters(query, startDate, endDate, branchId, serviceIds, paymentMethod);
+            query = ApplyCommonBookingServiceFilters(query, startDate, endDate, branchId, serviceIds, null);
 
             var result = await query
                 .GroupBy(bs => new { bs.ServiceId, bs.Service.Name })
@@ -169,13 +168,13 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
             DateTime? endDate = null,
             int? branchId = null,
             List<int>? serviceIds = null,
-            string? paymentMethod = null)
+            string? status = null)
         {
             var query = _context.Bookings
                 .Include(b => b.Branch)
                 .AsQueryable();
 
-            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, paymentMethod);
+            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, status);
 
             var result = await query
                 .GroupBy(b => new { b.BranchId, b.Branch.Name })
@@ -195,11 +194,11 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
             DateTime? endDate = null,
             int? branchId = null,
             List<int>? serviceIds = null,
-            string? paymentMethod = null)
+            string? status = null)
         {
             var query = _context.Bookings.AsQueryable();
 
-            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, paymentMethod);
+            query = ApplyCommonAppointmentFilters(query, startDate, endDate, branchId, serviceIds, status);
 
             var result = await query
                 .GroupBy(b => b.Status)
@@ -217,35 +216,6 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
 
         #region Customer Demographics Report Method
 
-        //public async Task<List<CustomerDemographicsDto>> GetCustomerDemographicsAsync(DateTime? startDate, DateTime? endDate, int? branchId)
-        //{
-        //    var query = _context.Clients
-        //        .Include(c => c.Bookings)
-        //            .ThenInclude(b => b.Branch)
-        //        .AsQueryable();
-
-        //    if (startDate.HasValue || endDate.HasValue || branchId.HasValue)
-        //    {
-        //        query = query.Where(c => c.Bookings.Any(b =>
-        //            (!startDate.HasValue || b.BookingDate >= startDate.Value) &&
-        //            (!endDate.HasValue || b.BookingDate <= endDate.Value) &&
-        //            (!branchId.HasValue || b.BranchId == branchId.Value)
-        //        ));
-        //    }
-
-        //    var result = await query.Select(c => new CustomerDemographicsDto
-        //    {
-        //        ClientId = c.ClientId,
-        //        FirstName = c.FirstName,
-        //        LastName = c.LastName,
-        //        Gender = c.Gender,
-        //        Birthdate = c.Birthdate,
-        //        Branches = c.Bookings.Select(b => b.Branch.Name).Distinct().ToList(),
-        //    })
-        //    .ToListAsync();
-
-        //    return result;
-        //}
         public async Task<List<CustomerDemographicsDto>> GetCustomerDemographicsAsync(int? branchId, string? gender = null, DateTime? birthDateStart = null, DateTime? birthDateEnd = null)
         {
             var query = _context.Clients
@@ -340,12 +310,12 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
         }
 
         private IQueryable<Booking> ApplyCommonAppointmentFilters(
-            IQueryable<Booking> query,
-            DateTime? startDate,
-            DateTime? endDate,
-            int? branchId,
-            List<int>? serviceIds,
-            string? paymentMethod)
+        IQueryable<Booking> query,
+        DateTime? startDate,
+        DateTime? endDate,
+        int? branchId,
+        List<int>? serviceIds,
+        string? status) 
         {
             if (startDate.HasValue)
                 query = query.Where(b => b.BookingDate >= startDate.Value);
@@ -359,11 +329,14 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
             if (serviceIds != null && serviceIds.Any())
                 query = query.Where(b => b.BookingServices.Any(bs => serviceIds.Contains(bs.ServiceId)));
 
-            if (!string.IsNullOrEmpty(paymentMethod))
-                query = query.Where(b => b.Transactions.Any(t => t.PaymentMethod == paymentMethod));
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(b => b.Status == status);  
 
             return query;
         }
+
+        
+
 
         #endregion
     }

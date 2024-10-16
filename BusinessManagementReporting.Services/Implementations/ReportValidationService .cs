@@ -10,9 +10,47 @@ namespace BusinessManagementReporting.Services.Implementations
 {
     public class ReportValidationService : IReportValidationService
     {
-        private readonly string[] _validPaymentMethods = { "cash", "credit card", "debit card" };
+        private static readonly string[] ValidPaymentMethods = { "cash", "credit card", "debit card" };
+        private static readonly string[] ValidBookingStatuses = { "confirmed", "pending" };
+        private static readonly string[] ValidGenders = { "male", "female", "other" };
 
-        public (bool IsValid, string? ErrorMessage) ValidateReportRequest(ReportRequest request)
+        public (bool IsValid, string? ErrorMessage) ValidateRevenueReportRequest(RevenueReportRequest request)
+        {
+            var baseValidation = ValidateCommonFields(request);
+            if (!baseValidation.IsValid) return baseValidation;
+
+            return ValidatePaymentMethod(request.PaymentMethod);
+        }
+
+        public (bool IsValid, string? ErrorMessage) ValidateAppointmentReportRequest(AppointmentReportRequest request)
+        {
+            var baseValidation = ValidateCommonFields(request);
+            if (!baseValidation.IsValid) return baseValidation;
+
+            return ValidateBookingStatus(request.BookingStatus);
+        }
+
+        public (bool IsValid, string ErrorMessage) ValidateCustomerDemographicsReportRequest(CustomerDemographicsReportRequest request)
+        {
+            if (request.BirthDateStart.HasValue && request.BirthDateEnd.HasValue && request.BirthDateStart > request.BirthDateEnd)
+            {
+                return (false, "Birth date start must be earlier than or equal to birth date end.");
+            }
+
+            if (!string.IsNullOrEmpty(request.Gender) && !ValidGenders.Contains(request.Gender.ToLower()))
+            {
+                return (false, "Invalid gender specified. Allowed values are 'Male', 'Female', or 'Other'.");
+            }
+
+            if (request.BranchId.HasValue && request.BranchId <= 0)
+            {
+                return (false, "Invalid branch ID.");
+            }
+
+            return (true, string.Empty);
+        }
+
+        private static (bool IsValid, string? ErrorMessage) ValidateCommonFields(BaseReportRequest request)
         {
             if (request.StartDate.HasValue && request.EndDate.HasValue && request.StartDate > request.EndDate)
             {
@@ -29,33 +67,25 @@ namespace BusinessManagementReporting.Services.Implementations
                 return (false, "One or more service IDs are invalid.");
             }
 
-            if (!string.IsNullOrEmpty(request.PaymentMethod) &&
-                !_validPaymentMethods.Contains(request.PaymentMethod.ToLower()))
-            {
-                return (false, "Invalid payment method.");
-            }
-
             return (true, null);
         }
 
-        public (bool IsValid, string ErrorMessage) ValidateCustomerDemographicsReportRequest(CustomerDemographicsReportRequest request)
+        private static (bool IsValid, string? ErrorMessage) ValidatePaymentMethod(string? paymentMethod)
         {
-            if (request.BirthDateStart.HasValue && request.BirthDateEnd.HasValue && request.BirthDateStart > request.BirthDateEnd)
+            if (!string.IsNullOrEmpty(paymentMethod) && !ValidPaymentMethods.Contains(paymentMethod.ToLower()))
             {
-                return (false, "Birth date start must be earlier than or equal to birth date end.");
+                return (false, $"Invalid payment method. Valid choices are: {string.Join(", ", ValidPaymentMethods)}.");
             }
+            return (true, null);
+        }
 
-            if (!string.IsNullOrEmpty(request.Gender) && !new[] { "male", "female", "other" }.Contains(request.Gender.ToLower()))
+        private static (bool IsValid, string? ErrorMessage) ValidateBookingStatus(string? bookingStatus)
+        {
+            if (!string.IsNullOrEmpty(bookingStatus) && !ValidBookingStatuses.Contains(bookingStatus.ToLower()))
             {
-                return (false, "Invalid gender specified. Allowed values are 'Male', 'Female', or 'Other'.");
+                return (false, $"Invalid Booking Status. Valid choices are: {string.Join(", ", ValidBookingStatuses)}.");
             }
-
-            if (request.BranchId.HasValue && request.BranchId <= 0)
-            {
-                return (false, "Invalid branch ID.");
-            }
-
-            return (true, string.Empty);
+            return (true, null);
         }
     }
 }
