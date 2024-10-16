@@ -88,7 +88,6 @@ namespace BusinessManagementReporting.Services.Implementations
                 new Claim(ClaimTypes.Name, user.UserName ?? "")
             };
 
-            // Get user roles
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {

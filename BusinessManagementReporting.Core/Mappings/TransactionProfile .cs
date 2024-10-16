@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace BusinessManagementReporting.Core.Mappings
 {
-    // Profiles/TransactionProfile.cs
     public class TransactionProfile : Profile
     {
         public TransactionProfile()

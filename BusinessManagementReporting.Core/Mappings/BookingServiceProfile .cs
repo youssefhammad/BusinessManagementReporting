@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace BusinessManagementReporting.Core.Mappings
 {
-    // Profiles/BookingServiceProfile.cs
     public class BookingServiceProfile : Profile
     {
         public BookingServiceProfile()

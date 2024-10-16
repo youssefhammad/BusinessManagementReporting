@@ -182,7 +182,7 @@ namespace BusinessManagementReporting.Infrastructure.Data
             // Save changes to generate IDs
             await context.SaveChangesAsync();
 
-            // Seed Bookings using navigation properties
+            // Seed Bookings
             var bookings = new List<Booking>
             {
                 new Booking
@@ -230,7 +230,7 @@ namespace BusinessManagementReporting.Infrastructure.Data
             await context.Bookings.AddRangeAsync(bookings);
             await context.SaveChangesAsync();
 
-            // Seed BookingServices using navigation properties
+            // Seed BookingServices
             var bookingServices = new List<BookingService>
             {
                 new BookingService
@@ -280,7 +280,7 @@ namespace BusinessManagementReporting.Infrastructure.Data
             await context.BookingServices.AddRangeAsync(bookingServices);
             await context.SaveChangesAsync();
 
-            // Seed Transactions using navigation properties
+            // Seed Transactions
             var transactions = new List<Transaction>
             {
                 new Transaction
@@ -323,7 +323,7 @@ namespace BusinessManagementReporting.Infrastructure.Data
 
         private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            var roles = new List<string> { "Admin", "User" };
+            var roles = new List<string> { "Dev", "HR" };
 
             foreach (var roleName in roles)
             {
@@ -338,50 +338,47 @@ namespace BusinessManagementReporting.Infrastructure.Data
 
         private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager)
         {
-            var testUserEmail = "testuser@example.com";
-            var testUserPassword = "Test@123";
+            var hrUserEmail = "hr@glamera.com";
+            var hrUserPassword = "Test@123";
 
-            var testUser = await userManager.FindByEmailAsync(testUserEmail);
-            if (testUser == null)
+            var hrUser = await userManager.FindByEmailAsync(hrUserEmail);
+            if (hrUser == null)
             {
-                testUser = new ApplicationUser
+                hrUser = new ApplicationUser
                 {
-                    UserName = testUserEmail,
-                    Email = testUserEmail,
+                    UserName = hrUserEmail,
+                    Email = hrUserEmail,
                     EmailConfirmed = true, 
                 };
 
-                var result = await userManager.CreateAsync(testUser, testUserPassword);
+                var result = await userManager.CreateAsync(hrUser, hrUserPassword);
                 if (result.Succeeded)
                 {
-                    // Assign role if needed
-                    await userManager.AddToRoleAsync(testUser, "User");
+                    await userManager.AddToRoleAsync(hrUser, "HR");
                 }
                 else
                 {
-                    // Handle errors (log them or throw exception)
                     throw new Exception($"Failed to create test user: {string.Join(", ", result.Errors)}");
                 }
             }
 
-            // Optionally create an admin user
-            var adminUserEmail = "admin@example.com";
-            var adminUserPassword = "Admin@123";
+            var devUserEmail = "dev@glamera.com";
+            var devUserPassword = "Test@123";
 
-            var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
-            if (adminUser == null)
+            var devUser = await userManager.FindByEmailAsync(devUserEmail);
+            if (devUser == null)
             {
-                adminUser = new ApplicationUser
+                devUser = new ApplicationUser
                 {
-                    UserName = adminUserEmail,
-                    Email = adminUserEmail,
+                    UserName = devUserEmail,
+                    Email = devUserEmail,
                     EmailConfirmed = true,
                 };
 
-                var result = await userManager.CreateAsync(adminUser, adminUserPassword);
+                var result = await userManager.CreateAsync(devUser, devUserPassword);
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                    await userManager.AddToRoleAsync(devUser, "Dev");
                 }
                 else
                 {

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace BusinessManagementReporting.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ReportsController : ControllerBase

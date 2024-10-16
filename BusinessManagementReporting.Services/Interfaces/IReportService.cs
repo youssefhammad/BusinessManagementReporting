@@ -12,12 +12,7 @@ namespace BusinessManagementReporting.Services.Interfaces
     public interface IReportService
     {
         Task<RevenueReportDto> GetRevenueReportAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
-        Task<AppointmentReportDto> GetAppointmentReportAsync(
-        DateTime? startDate = null,
-        DateTime? endDate = null,
-        int? branchId = null,
-        List<int>? serviceIds = null,
-        string? paymentMethod = null);
+        Task<AppointmentReportDto> GetAppointmentReportAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
         Task<CustomerDemographicsReportDto> GetCustomerDemographicsReportAsync(int? branchId, string? gender = null, DateTime? birthDateStart = null, DateTime? birthDateEnd = null);
     }
 }

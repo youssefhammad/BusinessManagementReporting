@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace BusinessManagementReporting.Services.Implementations
 {
-    // Services/ClientService.cs
     public class ClientService : IClientService
     {
         private readonly IUnitOfWork _unitOfWork;

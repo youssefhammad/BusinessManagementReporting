@@ -217,35 +217,6 @@ namespace BusinessManagementReporting.Infrastructure.Repositories
 
         #region Customer Demographics Report Method
 
-        //public async Task<List<CustomerDemographicsDto>> GetCustomerDemographicsAsync(DateTime? startDate, DateTime? endDate, int? branchId)
-        //{
-        //    var query = _context.Clients
-        //        .Include(c => c.Bookings)
-        //            .ThenInclude(b => b.Branch)
-        //        .AsQueryable();
-
-        //    if (startDate.HasValue || endDate.HasValue || branchId.HasValue)
-        //    {
-        //        query = query.Where(c => c.Bookings.Any(b =>
-        //            (!startDate.HasValue || b.BookingDate >= startDate.Value) &&
-        //            (!endDate.HasValue || b.BookingDate <= endDate.Value) &&
-        //            (!branchId.HasValue || b.BranchId == branchId.Value)
-        //        ));
-        //    }
-
-        //    var result = await query.Select(c => new CustomerDemographicsDto
-        //    {
-        //        ClientId = c.ClientId,
-        //        FirstName = c.FirstName,
-        //        LastName = c.LastName,
-        //        Gender = c.Gender,
-        //        Birthdate = c.Birthdate,
-        //        Branches = c.Bookings.Select(b => b.Branch.Name).Distinct().ToList(),
-        //    })
-        //    .ToListAsync();
-
-        //    return result;
-        //}
         public async Task<List<CustomerDemographicsDto>> GetCustomerDemographicsAsync(int? branchId, string? gender = null, DateTime? birthDateStart = null, DateTime? birthDateEnd = null)
         {
             var query = _context.Clients
