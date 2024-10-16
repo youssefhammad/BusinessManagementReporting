@@ -18,10 +18,10 @@ namespace BusinessManagementReporting.Core.Interfaces
         Task<List<RevenueByPaymentMethodDto>> GetRevenueByPaymentMethodAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null);
 
         // Appointment Report Methods
-        Task<int> GetTotalAppointmentsAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
-        Task<List<AppointmentsByServiceDto>> GetAppointmentsByServiceAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
-        Task<List<AppointmentsByBranchDto>> GetAppointmentsByBranchAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
-        Task<List<AppointmentsByStatusDto>> GetAppointmentsByStatusAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? paymentMethod = null);
+        Task<int> GetTotalAppointmentsAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? status = null);
+        Task<List<AppointmentsByServiceDto>> GetAppointmentsByServiceAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null);
+        Task<List<AppointmentsByBranchDto>> GetAppointmentsByBranchAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? status = null);
+        Task<List<AppointmentsByStatusDto>> GetAppointmentsByStatusAsync(DateTime? startDate = null, DateTime? endDate = null, int? branchId = null, List<int>? serviceIds = null, string? status = null);
 
         // Customer Demographics Report Method
         Task<List<CustomerDemographicsDto>> GetCustomerDemographicsAsync(int? branchId, string? gender = null, DateTime? birthDateStart = null, DateTime? birthDateEnd = null);
